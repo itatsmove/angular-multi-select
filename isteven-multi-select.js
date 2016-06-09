@@ -661,11 +661,13 @@ angular.module( 'isteven-multi-select', ['ng'] ).directive( 'istevenMultiSelect'
                     }
                     
                     // focus on the filter element on open. 
-                    if ( element[ 0 ].querySelector( '.inputFilter' ) ) {                        
-                        element[ 0 ].querySelector( '.inputFilter' ).focus();    
-                        $scope.tabIndex = $scope.tabIndex + helperItemsLength - 2;
-                        // blur button in vain
-                        angular.element( element ).children()[ 0 ].blur();
+                    if ( element[ 0 ].querySelector( '.inputFilter' ) ) {    
+                        $timeout(function() {                    
+                            element[ 0 ].querySelector( '.inputFilter' ).focus();    
+                            $scope.tabIndex = $scope.tabIndex + helperItemsLength - 2;
+                            // blur button in vain
+                            angular.element( element ).children()[ 0 ].blur();
+                        });
                     }
                     // if there's no filter then just focus on the first checkbox item
                     else {                  
@@ -1069,7 +1071,7 @@ angular.module( 'isteven-multi-select', ['ng'] ).directive( 'istevenMultiSelect'
                     '<div class="line" style="position:relative" ng-if="helperStatus.filter">'+
                         // textfield                
                         '<input placeholder="{{lang.search}}" type="text"' +
-                            'ng-click="select( \'filter\', $event )" '+
+                            // 'ng-click="select( \'filter\', $event )" '+
                             'ng-model="inputLabel.labelFilter" '+
                             'ng-change="searchChanged()" class="inputFilter"'+
                             '/>'+
