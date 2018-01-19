@@ -111,11 +111,9 @@ angular.module( 'isteven-multi-select', ['ng'] ).directive( 'istevenMultiSelect'
                 var scrollHeight = raw.scrollHeight;
                 var offsetHeight = raw.offsetHeight;
 
-                if (scrollTop === (scrollHeight - offsetHeight)) {
+                if (scrollTop === (scrollHeight - offsetHeight) && $scope.scrollLimit < $scope.inputModel.length) {
                     $scope.$apply(function() {
-                        if ($scope.scrollLimit < $scope.inputModel.length) {
-                            $scope.scrollLimit += 10;
-                        }
+                        $scope.scrollLimit += 10;
                     });
                 }
             });
