@@ -105,12 +105,12 @@ angular.module( 'isteven-multi-select', ['ng'] ).directive( 'istevenMultiSelect'
             var raw = checkBoxContainer[0];
             $scope.scrollLimit = 10;
 
-            checkBoxContainer.bind('scroll', function() {
+            checkBoxContainer.on('scroll', function() {
                 var scrollTop = raw.scrollTop;
                 var scrollHeight = raw.scrollHeight;
                 var offsetHeight = raw.offsetHeight;
 
-                if (scrollTop === (scrollHeight - offsetHeight) && $scope.scrollLimit < $scope.inputModel.length) {
+                if ((scrollTop + offsetHeight + 1) > scrollHeight && $scope.scrollLimit < $scope.inputModel.length) {
                     $scope.$apply(function() {
                         $scope.scrollLimit += 10;
                     });
@@ -1105,7 +1105,7 @@ angular.module( 'isteven-multi-select', ['ng'] ).directive( 'istevenMultiSelect'
                 // selection items
                 '<div class="checkBoxContainer">'+
                     '<div '+
-                        'ng-repeat="item in filteredModel | filter:removeGroupEndMarker | limitTo: scrollLimit" class="multiSelectItem"'+
+                        'ng-repeat="item in filteredModel | filter:removeGroupEndMarker | limitTo: scrollLimit track by $index" class="multiSelectItem"'+
                         'ng-class="{selected: item[ tickProperty ], horizontal: orientationH, vertical: orientationV, multiSelectGroup:item[ groupProperty ], disabled:itemIsDisabled( item )}"'+
                         'ng-click="syncItems( item, $event, $index );" '+
                         'ng-mouseleave="removeFocusStyle( tabIndex );"> '+
