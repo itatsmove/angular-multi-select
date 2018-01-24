@@ -1028,7 +1028,9 @@ angular.module( 'isteven-multi-select', ['ng'] ).directive( 'istevenMultiSelect'
                 $scope.isDisabled = newVal;
             });
 
+            // 4.0.2 Commented out because they are not needed and affects performance
             // this is for touch enabled devices. We don't want to hide checkboxes on scroll.
+            /*
             var onTouchStart = function( e ) {
             	$scope.$apply( function() {
             		$scope.scrolled = false;
@@ -1047,6 +1049,7 @@ angular.module( 'isteven-multi-select', ['ng'] ).directive( 'istevenMultiSelect'
 			    angular.element( document ).unbind( 'touchstart', onTouchStart);
             	angular.element( document ).unbind( 'touchmove', onTouchMove);
             });
+            */
         }
     }
 }]).run( [ '$templateCache' , function( $templateCache ) {
