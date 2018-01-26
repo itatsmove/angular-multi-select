@@ -71,7 +71,6 @@ angular.module( 'isteven-multi-select', ['ng'] ).directive( 'istevenMultiSelect'
             'isteven-multi-select.htm',
 
         link: function ( $scope, element, attrs ) {
-
             $scope.backUp           = [];
             $scope.varButtonLabel   = '';
             $scope.spacingProperty  = '';
@@ -106,12 +105,12 @@ angular.module( 'isteven-multi-select', ['ng'] ).directive( 'istevenMultiSelect'
             var raw = checkBoxContainer[0];
             $scope.scrollLimit = 10;
 
-            checkBoxContainer.bind('scroll', function() {
+            checkBoxContainer.on('scroll', function() {
                 var scrollTop = raw.scrollTop;
                 var scrollHeight = raw.scrollHeight;
                 var offsetHeight = raw.offsetHeight;
 
-                if (scrollTop === (scrollHeight - offsetHeight) && $scope.scrollLimit < $scope.inputModel.length) {
+                if ((scrollTop + offsetHeight + 1) > scrollHeight && $scope.scrollLimit < $scope.inputModel.length) {
                     $scope.$apply(function() {
                         $scope.scrollLimit += 10;
                     });
@@ -221,7 +220,7 @@ angular.module( 'isteven-multi-select', ['ng'] ).directive( 'istevenMultiSelect'
                         angular.forEach( $scope.filteredModel, function( value, key ) {
                             if ( typeof value !== 'undefined' ) {
                                 if ( typeof value[ attrs.groupProperty ] === 'undefined' ) {
-                                    var tempObj = angular.copy( value );
+                                    var tempObj = JSON.parse(JSON.stringify( value ));
                                     var index = filterObj.push( tempObj );
                                     delete filterObj[ index - 1 ][ $scope.indexProperty ];
                                     delete filterObj[ index - 1 ][ $scope.spacingProperty ];
@@ -454,7 +453,7 @@ angular.module( 'isteven-multi-select', ['ng'] ).directive( 'istevenMultiSelect'
                 }
 
                 // we execute the callback function here
-                clickedItem = angular.copy( item );
+                clickedItem = JSON.parse(JSON.stringify( item ));
                 if ( clickedItem !== null ) {
                     $timeout( function() {
                         delete clickedItem[ $scope.indexProperty ];
@@ -520,7 +519,7 @@ angular.module( 'isteven-multi-select', ['ng'] ).directive( 'istevenMultiSelect'
                             && typeof value[ attrs.groupProperty ] === 'undefined'
                             && value[ $scope.tickProperty ] === true
                         ) {
-                            var temp = angular.copy( value );
+                            var temp = JSON.parse(JSON.stringify( value ));
                             var index = $scope.outputModel.push( temp );
                             delete $scope.outputModel[ index - 1 ][ $scope.indexProperty ];
                             delete $scope.outputModel[ index - 1 ][ $scope.spacingProperty ];
@@ -1001,18 +1000,21 @@ angular.module( 'isteven-multi-select', ['ng'] ).directive( 'istevenMultiSelect'
             // watch1, for changes in input model property
             // updates multi-select when user select/deselect a single checkbox programatically
             // https://github.com/isteven/angular-multi-select/issues/8
-            $scope.$watch( 'inputModel' , function( newVal ) {
+
+            // 4.0.2 Use $watchCollection which does shallow reference checking instead of
+            // $watch with deep equality
+            $scope.$watchCollection( 'inputModel' , function( newVal ) {
                 if ( newVal ) {
                     $scope.refreshOutputModel();
                     $scope.refreshButton();
                 }
-            }, true );
+            });
 
             // watch2 for changes in input model as a whole
             // this on updates the multi-select when a user load a whole new input-model. We also update the $scope.backUp variable
             $scope.$watch( 'inputModel' , function( newVal ) {
                 if ( newVal ) {
-                    $scope.backUp = angular.copy( $scope.inputModel );
+                    $scope.backUp = JSON.parse(JSON.stringify( $scope.inputModel ));
                     $scope.updateFilter();
                     $scope.prepareGrouping();
                     $scope.prepareIndex();
@@ -1026,7 +1028,9 @@ angular.module( 'isteven-multi-select', ['ng'] ).directive( 'istevenMultiSelect'
                 $scope.isDisabled = newVal;
             });
 
+            // 4.0.2 Commented out because they are not needed and affects performance
             // this is for touch enabled devices. We don't want to hide checkboxes on scroll.
+            /*
             var onTouchStart = function( e ) {
             	$scope.$apply( function() {
             		$scope.scrolled = false;
@@ -1045,6 +1049,7 @@ angular.module( 'isteven-multi-select', ['ng'] ).directive( 'istevenMultiSelect'
 			    angular.element( document ).unbind( 'touchstart', onTouchStart);
             	angular.element( document ).unbind( 'touchmove', onTouchMove);
             });
+            */
         }
     }
 }]).run( [ '$templateCache' , function( $templateCache ) {
@@ -1100,7 +1105,7 @@ angular.module( 'isteven-multi-select', ['ng'] ).directive( 'istevenMultiSelect'
                 // selection items
                 '<div class="checkBoxContainer">'+
                     '<div '+
-                        'ng-repeat="item in filteredModel | filter:removeGroupEndMarker | limitTo: scrollLimit" class="multiSelectItem"'+
+                        'ng-repeat="item in filteredModel | filter:removeGroupEndMarker | limitTo: scrollLimit track by $index" class="multiSelectItem"'+
                         'ng-class="{selected: item[ tickProperty ], horizontal: orientationH, vertical: orientationV, multiSelectGroup:item[ groupProperty ], disabled:itemIsDisabled( item )}"'+
                         'ng-click="syncItems( item, $event, $index );" '+
                         'ng-mouseleave="removeFocusStyle( tabIndex );"> '+
