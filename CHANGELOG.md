@@ -1,3 +1,11 @@
+### v4.0.2
+##### Added / Updated
+- Optimize directive initialization
+
+### v4.0.1
+##### Added / Updated
+- Wrap inputFilter focus in $timeout so it works on mobile 
+
 ### v4.0.0
 ##### Added / Updated
 - You can now customize output-model properties that you need, instead of having all data.
